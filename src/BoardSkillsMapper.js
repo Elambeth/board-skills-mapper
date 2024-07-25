@@ -149,7 +149,8 @@ function BoardSkillsMapper() {
   
     const spiderData = skillsList.map(skill => ({
       skill,
-      value: skillCounts[skill]
+      value: skillCounts[skill],
+      fullMark: totalMembers  // Add this line
     }));
     setSpiderData(spiderData);
   };
@@ -160,6 +161,13 @@ function BoardSkillsMapper() {
       setNewSkill('');
       setIsModalOpen(false);
     }
+  };
+  const generateTicks = (maxValue) => {
+    const ticks = [];
+    for (let i = 0; i <= maxValue; i++) {
+      ticks.push(i);
+    }
+    return ticks;
   };
 
   const downloadAsImage = async (ref, filename) => {
@@ -328,7 +336,30 @@ function BoardSkillsMapper() {
                     <RadarChart cx="50%" cy="50%" outerRadius="80%" data={spiderData}>
                       <PolarGrid />
                       <PolarAngleAxis dataKey="skill" />
-                      <PolarRadiusAxis />
+                      <PolarRadiusAxis
+                        angle={0}
+                        domain={[0, boardMembers.length]}
+                        ticks={generateTicks(boardMembers.length)}
+                        tick={(props) => {
+                          const { x, y, payload } = props;
+                          return (
+                            <g transform={`translate(${x},${y})`}>
+                              <text
+                                x={0}
+                                y={0}
+                                dy={3}
+                                textAnchor="middle"
+                                fill="#666"
+                                fontSize={14}
+                              >
+                                {payload.value}
+                              </text>
+                            </g>
+                          );
+                        }}
+                        axisLine={false}
+                        tickLine={false}
+                      />
                       <Radar name="Skills" dataKey="value" stroke="#8884d8" fill="#8884d8" fillOpacity={0.6} />
                     </RadarChart>
                   </ResponsiveContainer>
